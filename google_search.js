@@ -36,6 +36,7 @@
  *   SELENIUM_REMOTE_URL=http://www.example.com:4444/wd/hub \
  *     node selenium-webdriver/example/google_search.js
  */
+const fs = require('fs');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
 const {Builder, By, Key, until} = require('selenium-webdriver');
@@ -53,4 +54,12 @@ driver.get('http://www.google.com/ncr')
     .then(_ =>
         driver.findElement(By.name('q')).sendKeys('webdriver', Key.RETURN))
     .then(_ => driver.wait(until.titleIs('webdriver - Google Search'), 1000))
+    .then(_ => driver.takeScreenshot())
+    .then(_ => fs.writeFile(
+      "test.png",
+      _.replace(/^data:image\/png;base64,/,''), 
+      'base64',
+      (error) => {
+        if(error) throw error;
+      }))
     .then(_ => driver.quit());
